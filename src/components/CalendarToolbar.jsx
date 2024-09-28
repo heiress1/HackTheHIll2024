@@ -18,7 +18,7 @@ class BasicToolbar extends Toolbar {
         return (
             <>
                 <div className="rounded-lg bg-mid">
-                    <div className="rbc-toolbar h-16 p-4 m-0 bg-white rounded-lg flex flex-row justify-between items-center gap-4 ">
+                    <div className="h-16 p-4 m-0 bg-white rounded-lg flex flex-row justify-between items-center gap-4 ">
                         <div className="flex flex-row items-center gap-4">
                             <div className="rbc-btn-group">
                                 <select
