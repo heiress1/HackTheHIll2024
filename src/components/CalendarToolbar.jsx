@@ -1,4 +1,3 @@
-import Dropdown from "./Dropdown.jsx";
 import Toolbar from "react-big-calendar/lib/Toolbar";
 import Button from "./Button.jsx";
 
