@@ -74,10 +74,10 @@ class BasicToolbar extends Toolbar {
                             </Button>
                         </div>
                     </div>
-                    <div className="bg-mid h-6"></div>
+                    <div className="bg-mid h-2"></div>
                 </div>
                 <div className="rounded-lg bg-mid">
-                    <div className="bg-mid h-6"></div>
+                    <div className="bg-mid h-2"></div>
                     <div className="bg-white h-3 p-4 rounded-t-lg"></div>
                 </div>
             </>

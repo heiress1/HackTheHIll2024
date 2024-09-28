@@ -1,9 +1,9 @@
-import { Calendar, momentLocalizer } from "react-big-calendar";
+import { Calendar, momentLocalizer, Views } from "react-big-calendar";
 import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import moment from "moment";
-import events from "../utils/dummyEvents";
+import dummyEvents from "../utils/dummyEvents";
 import { useCallback, useState } from "react";
 
 import CalendarToolbar from "./CalendarToolbar";
@@ -13,7 +13,7 @@ const DnDCalendar = withDragAndDrop(Calendar);
 const localizer = momentLocalizer(moment);
 
 export default function CalendarSection() {
-    const [myEvents, setMyEvents] = useState(events);
+    const [myEvents, setMyEvents] = useState(dummyEvents);
 
     const moveEvent = useCallback(
         ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
@@ -50,14 +50,11 @@ export default function CalendarSection() {
     return (
         <div className="calendarSink bg-mid rounded-xl col-span-6 col-start-3 flex flex-col gap-12 m-4 p-4 w-[70vw]">
             <DnDCalendar
-                defaultView="week"
+                defaultView={Views.WEEK}
                 className="bg-white rounded-lg h-[rem]"
                 localizer={localizer}
                 events={myEvents}
                 draggableAccessor="isDraggable"
-                startAccessor="start"
-                endAccessor="end"
-                // view={calendarState}
                 toolbar={true}
                 onEventDrop={moveEvent}
                 onEventResize={resizeEvent}
