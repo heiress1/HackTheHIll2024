@@ -5,7 +5,8 @@ export default function Dropdown(props) {
     const [selectedOption, setSelectedOption] = useState("Week");
 
     function viewChangeHandler(state) {
-        props.viewChangeHandler(state);
+        console.log(props.view);
+        props.viewChangeHandler(state, props.view);
     }
 
     return (
