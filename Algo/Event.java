@@ -9,13 +9,15 @@ public class Event {
     private Duration eventLengthMinutes;
     private String name;
     private String notes;
+    private Boolean isLeisure;
 
-    public Event(LocalDate startTime, LocalDate endTime, String name, String notes) {
+    public Event(LocalDate startTime, LocalDate endTime, String name, String notes, Boolean isLeisure) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventLengthMinutes = Duration.between(startTime,endTime);
         this.name = name;
         this.notes = notes;
+        this.isLeisure = isLeisure;
     }
 
     public void setStartTime(LocalDate startTime) {
@@ -32,6 +34,10 @@ public class Event {
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventLengthMinutes = Duration.between(startTime,endTime);
+    }
+
+    public void setLeisure(Boolean leisure) {
+        isLeisure = leisure;
     }
 
     public void setName(String name) {
@@ -60,5 +66,9 @@ public class Event {
 
     public String getNotes() {
         return notes;
+    }
+
+    public Boolean getLeisure() {
+        return isLeisure;
     }
 }
