@@ -14,10 +14,12 @@ public class Scheduler {
     static List<Task> taskSolution = new ArrayList<>();
     public static void importCalendar() {
         // Code Here to import any Json files for tasks and events and populate the Lists. Sort task upon import
-
     }
     public static void outputCalendar(){
         // Function To output all events and tasks as json files
+    }
+    public static void writeTasksAndEvents(List<Task> tasks){
+        
     }
 
     public static String reBalance(){
@@ -43,68 +45,56 @@ public class Scheduler {
         List<Task> tasks = new ArrayList<>(dbTasks);
         List<Event> events = new ArrayList<>(dbEvents);
         List<TimeWindow> timeWindows = new ArrayList<>(findTimeWindows(events));
-        if (scheduleTasks(tasks, timeWindows, false, false) == 0){
+        int returnCode = scheduleTasks(tasks, timeWindows);
+        if (returnCode == 1){
+            writeTasksAndEvents(taskSolution);
             return "Success";
         }
-        adjustTaskDeadlines(dbTasks, dbEvents,true);
-        timeWindows = new ArrayList<>(findTimeWindows(events));
-        if (scheduleTasks(tasks, timeWindows, true, false) == 0){
-            return "Warning, You will have to work in your Leisure time";
-        } else {
-            if(scheduleTasks(tasks, timeWindows, true, true) == 0) {
-                return "You will not be able to complete all tasks, consider dropping less important ones";
-            }
-            return "failure to schedule";
+        if (returnCode == 0) {
+            writeTasksAndEvents(taskSolution);
+            return "Unable to complete tasks by deadline, Consider removing less important tasks and events";
         }
+        return "Failed to Schedule";
+
 
     }
-    // If IgnoreLeisure is true
-    public static int scheduleTasks(List<Task> tasks, List<TimeWindow> timeWindows, Boolean ignoreLeisure, boolean cutTasks) {
-        for (int i = tasks.size() - 1; i >= 0; i--) {
+    public static int scheduleTasks(List<Task> tasks, List<TimeWindow> timeWindows) {
+        int returnCode = 1;
+        int i = tasks.size() - 1;
+        int j = 0;
+        while (!tasks.isEmpty()) {
+
             Task task = tasks.get(i);
-            Duration duration = task.getDuration();
-            for (int j = 0; j < timeWindows.size(); j++) {
-                TimeWindow window = timeWindows.get(j);
-                // timeWindow duration is geq than task duration plus 10 minutes (allows for 5 minute padding)
-                if (window.getDuration().compareTo(task.getDuration().plusMinutes(10)) >= 0) {
-
-                    Duration remainingTime = window.getDuration().minus(task.getDuration().plusMinutes(5));
-                    task.setStartTime(window.getStartDate().plusMinutes(5));
-                    task.setEndtime(window.getStartDate().plus(task.getDuration()));
-
-                    LocalDateTime endlastTask = task.getEndtime();
-                    Task lastTask = task;
-                    Task curTask = tasks.get(i - 1);
-                    while (remainingTime.compareTo(Duration.ofMinutes(minimumBlockSizeMinutes).plusMinutes(5)) >= 0){
-                        // The task is longer than the remaning time block it to the end then break
-                        Duration blockSpace = Duration.between(endlastTask, window.getEndDate().minusMinutes(5));
-                        if (curTask.getDuration().compareTo(remainingTime) > 0){
-                            Task t = new Task(task.getPriority(), blockSpace, task.getAdjustedDeadline(), task.getName(), task.getNotes());
-                            t.setStartTime(lastTask.getEndtime());
-                            t.setEndtime(window.getEndDate().minusMinutes(5));
-                            taskSolution.add(t);
-                            curTask.setDuration(task.getDuration().minus(blockSpace));
-                            break;
-                        }else {
-                            //If the event can fit in the remaining time, place it there then loop with the next item until the Timeframe is full
-                            curTask.setStartTime(lastTask.getEndtime());
-                            curTask.setEndtime(curTask.getStartTime().plus(curTask.getDuration()));
-                            i -= 1;
-                            lastTask = curTask;
-                            curTask = tasks.get(i - 1);
-                        }
-
-                    }
-                } //else we will need to split the time up into chunks
-                else{
-                    Task t = new Task(task.getPriority(), window.duration.minusMinutes(10), task.getAdjustedDeadline(), task.getName(), task.getNotes());
-                    t.setStartTime(window.getStartDate().plusMinutes(5));
-                    t.setEndtime(window.getEndDate().minusMinutes(5));
-                    taskSolution.add(t);
-                    task.setDuration(task.getDuration().minus(window.duration).minusMinutes(10));
+            TimeWindow window = timeWindows.get(j);
+            //Ensure the window's size can support a minimum block length
+            if (window.getDuration().compareTo(Duration.ofMinutes(minimumBlockSizeMinutes).plusMinutes(10)) < 0) {
+                j += 1;
+                window = timeWindows.get(j);
+            }
+            // timeWindow duration is geq than task duration, insert, adjust time windows to start at the end of new event
+            if (window.getDuration().compareTo(task.getDuration().plusMinutes(10)) >= 0) {
+                task.setStartTime(window.getStartTime().plusMinutes(5));
+                task.setEndtime(task.getStartTime().plus(task.getDuration()));
+                window.setTimes(task.getEndtime(), window.getEndTime());
+                taskSolution.add(task);
+                i += 1;
+            } else {
+                Task t = new Task(task.getPriority(), window.duration.minusMinutes(10), task.getAdjustedDeadline(), task.getName(), task.getNotes());
+                if (task.getAdjustedDeadline().compareTo(window.getEndTime()) == 0) {
+                    returnCode = 0;
+                    i += 1;
                 }
+                t.setStartTime(window.getStartTime().plusMinutes(5));
+                t.setEndtime(window.getEndTime().minusMinutes(5));
+                taskSolution.add(t);
+                task.setDuration(task.getDuration().minus(window.duration).minusMinutes(10));
+                j += 1;
             }
         }
+        return returnCode;
+    }
+    public int effectiveTimeToDeadline(LocalDateTime deadline, TimeWindow windows){
+        return 0;
     }
 
     public static void adjustTaskDeadlines(List<Task> tasks, List<Event> events, Boolean ignoreLeisure) {

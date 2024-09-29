@@ -4,28 +4,28 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 
 public class TimeWindow {
-    private LocalDateTime startDate;
-    private LocalDateTime endDate;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     Duration duration;
 
-    public TimeWindow(LocalDateTime startDate, LocalDateTime endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        duration = Duration.between(startDate, endDate);
+    public TimeWindow(LocalDateTime startTime, LocalDateTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        duration = Duration.between(startTime, endTime);
     }
 
-    public void setStartDate(LocalDateTime startDate, LocalDateTime endDate) {
-        this.startDate = startDate;
-        this.endDate = endDate;
-        duration = Duration.between(startDate, endDate);
+    public void setTimes(LocalDateTime startTime, LocalDateTime endTime) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        duration = Duration.between(startTime, endTime);
     }
 
-    public LocalDateTime getStartDate() {
-        return startDate;
+    public LocalDateTime getStartTime() {
+        return startTime;
     }
 
-    public LocalDateTime getEndDate() {
-        return endDate;
+    public LocalDateTime getEndTime() {
+        return endTime;
     }
 
     public Duration getDuration() {
