@@ -24,13 +24,22 @@ export default function SidebarTasks(props) {
                     </EventWrapper>
                 ))}
             </div>
-            <DarkButton
-                onClick={() => {
-                    props.setSizeState("expanded");
-                    props.setMode("new");
-                }}>
-                Add Task
-            </DarkButton>
+            <div className="flex flex-row gap-2">
+                <DarkButton
+                    onClick={() => {
+                        props.setSizeState("expanded");
+                        props.setMode("new");
+                    }}>
+                    Add Task
+                </DarkButton>
+                <DarkButton
+                    onClick={() => {
+                        props.setSizeState("expanded");
+                        props.setMode("new");
+                    }}>
+                    Reschedule
+                </DarkButton>
+            </div>
         </div>
     );
 }
