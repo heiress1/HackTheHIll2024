@@ -16,7 +16,7 @@ export default function Sidebar(props) {
     function sidebarStyleHandler(state) {
         switch (state) {
             case "normal":
-                return { width: "18rem" };
+                return { width: "28rem" };
             case "expanded":
                 return { width: "48rem" };
             default:
