@@ -30,8 +30,19 @@ export default function Tasklist(props) {
         <div className=" bg-white text-dark mt-4 ml-4 flex flex-col items-center justify-center p-4 rounded-lg shadow-md">
         <h1><b>{props.title}</b></h1>
         <h1> <b>Start Time: </b> <span onClick={toggleStartTime} className="cursor-pointer" >{fullStartTime ? props.start.toString() : shortStartTime} </span></h1> 
-        <h1>
+        {/* <h1>
   <b>End Time:</b> <span onClick={toggleEndTime} className="cursor-pointer"> {fullEndTime ? props.end.toString() :shortStartTime} </span> {props.allDay ? <span>All day</span> : <span>{props.end.toString()}</span>}
+</h1> */}
+<h1>
+    <b>End Time: </b>
+    {/* Only display "All Day" if props.allDay is true */}
+    {props.allDay ? (
+        <span>All Day</span>
+    ) : (
+        <span onClick={toggleEndTime} style={{ cursor: 'pointer' }}>
+            {fullEndTime ? props.end.toString() : props.end.toLocaleString()}
+        </span>
+    )}
 </h1>
         {/* <h1> <b>End Time: {props.allDay ? <h1> AllDay </h1> : <h1>{props.end.toString()} </h1>  */}
            
