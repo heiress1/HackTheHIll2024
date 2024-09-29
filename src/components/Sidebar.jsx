@@ -1,4 +1,5 @@
 import SidebarTasks from "./SidebarTasks";
+import TaskEdit from "./TaskEdit";
 
 // import NewTask from "./NewTask"; // Import NewTask component
 
@@ -6,13 +7,9 @@ export default function Sidebar(props) {
     function sidebarSizeHandler(state) {
         switch (state) {
             case "normal":
-                return (
-                    <>
-                        <SidebarTasks setSizeState={props.setSizeState} />{" "}
-                    </>
-                );
+                return <SidebarTasks setSizeState={props.setSizeState} />;
             case "expanded":
-                return null;
+                return <TaskEdit />;
             default:
                 return null;
         }
@@ -51,7 +48,11 @@ export default function Sidebar(props) {
             ) : (
                 <button
                     onClick={() => {
-                        props.setSizeState("collapsed");
+                        props.setSizeState(
+                            props.sizeState === "expanded"
+                                ? "normal"
+                                : "collapsed"
+                        );
                     }}>
                     <svg
                         xmlns="http://www.w3.org/2000/svg"

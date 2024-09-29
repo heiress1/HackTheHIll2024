@@ -22,7 +22,7 @@ class BasicToolbar extends Toolbar {
                         <div className="flex flex-row items-center gap-4">
                             <div className="rbc-btn-group">
                                 <select
-                                    className="form-control px-3 p-[0.35rem] border border-dark rounded-lg text-dark hover:bg-dark hover:text-white transition-all ease-in-out"
+                                    className="form-control px-3 p-[0.35rem] border border-dark rounded-md text-dark hover:bg-main hover:shadow-[0_0_15px_1px_] hover:text-white hover:border-main hover:shadow-main/50 transition-all ease-in-out"
                                     onChange={(e) =>
                                         this.handleDayChange(e, this.view)
                                     }
@@ -62,7 +62,7 @@ class BasicToolbar extends Toolbar {
                             </Button>
                         </div>
                         <div className="flex flex-row items-center gap-4">
-                            <div className="text-dark font-semibold text-xl">
+                            <div className="text-dark font-[550] text-xl">
                                 {this.props.label}
                             </div>
                             <Button

@@ -14,6 +14,8 @@ const events = [
         end: new Date("2024-10-05T23:59:59Z"),
         allDay: true,
         isDraggable: true,
+        description:
+            "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
     },
     {
         id: 3,
@@ -22,6 +24,8 @@ const events = [
         end: new Date("2024-10-10T15:30:00Z"),
         allDay: false,
         isDraggable: true,
+        description:
+            "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
     },
     {
         id: 4,
@@ -30,6 +34,8 @@ const events = [
         end: new Date("2024-10-15T16:00:00Z"),
         allDay: false,
         isDraggable: true,
+        description:
+            "lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum",
     },
 ];
 
