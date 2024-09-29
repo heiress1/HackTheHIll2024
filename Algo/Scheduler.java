@@ -19,7 +19,7 @@ public class Scheduler {
         // Function To output all events and tasks as json files
     }
     public static void writeTasksAndEvents(List<Task> tasks){
-        
+
     }
 
     public static String reBalance(){
@@ -63,7 +63,6 @@ public class Scheduler {
         int i = tasks.size() - 1;
         int j = 0;
         while (!tasks.isEmpty()) {
-
             Task task = tasks.get(i);
             TimeWindow window = timeWindows.get(j);
             //Ensure the window's size can support a minimum block length
@@ -71,24 +70,44 @@ public class Scheduler {
                 j += 1;
                 window = timeWindows.get(j);
             }
+            if (task.getDeadline().isAfter(window.getEndTime())){
+                returnCode = 0;
+                i -= 1;
+            }
             // timeWindow duration is geq than task duration, insert, adjust time windows to start at the end of new event
             if (window.getDuration().compareTo(task.getDuration().plusMinutes(10)) >= 0) {
                 task.setStartTime(window.getStartTime().plusMinutes(5));
                 task.setEndtime(task.getStartTime().plus(task.getDuration()));
+                if (task.getDeadline().isAfter(window.getStartTime()) && task.getDeadline().isBefore(window.getEndTime())) {
+                    task.setEndtime(task.getDeadline());
+                    returnCode = 0;
+                }
                 window.setTimes(task.getEndtime(), window.getEndTime());
                 taskSolution.add(task);
-                i += 1;
+                i -= 1;
             } else {
-                Task t = new Task(task.getPriority(), window.duration.minusMinutes(10), task.getAdjustedDeadline(), task.getName(), task.getNotes());
-                if (task.getAdjustedDeadline().compareTo(window.getEndTime()) == 0) {
+                if (task.getDeadline().isAfter(window.getStartTime()) && task.getDeadline().isBefore(window.getEndTime())){
+                    Task t = new Task(task.getPriority(), Duration.between(task.getStartTime().plusMinutes(5),task.getDeadline()), task.getDeadline(), task.getName(), task.getNotes());
                     returnCode = 0;
-                    i += 1;
+                    t.setStartTime(window.getStartTime().plusMinutes(5));
+                    t.setEndtime(t.getDeadline());
+                    taskSolution.add(t);
+                    task.setDuration(Duration.between(task.getStartTime().plusMinutes(5),task.getDeadline()));
+                    i -= 1;
+                    j += 1;
+
+                }else {
+                    Task t = new Task(task.getPriority(), window.duration.minusMinutes(10), task.getDeadline(), task.getName(), task.getNotes());
+                    if (task.getAdjustedDeadline().isEqual(window.getEndTime())) {
+                        returnCode = 0;
+                        i -= 1;
+                    }
+                    t.setStartTime(window.getStartTime().plusMinutes(5));
+                    t.setEndtime(window.getEndTime().minusMinutes(5));
+                    taskSolution.add(t);
+                    task.setDuration(task.getDuration().minus(window.duration).minusMinutes(10));
+                    j += 1;
                 }
-                t.setStartTime(window.getStartTime().plusMinutes(5));
-                t.setEndtime(window.getEndTime().minusMinutes(5));
-                taskSolution.add(t);
-                task.setDuration(task.getDuration().minus(window.duration).minusMinutes(10));
-                j += 1;
             }
         }
         return returnCode;
@@ -134,33 +153,43 @@ public class Scheduler {
     }
     public static List<TimeWindow> findTimeWindows(List<Event> events) {
         List<TimeWindow> timeWindows = new ArrayList<>();
-
-        // Get the current time
         LocalDateTime now = LocalDateTime.now();
 
-        // Check the gap between now and the end of the last event
-        Event lastEvent = events.get(events.size() - 1);
-        Duration durationFromNowToLastEventEnd = Duration.between(now, lastEvent.getEndTime());
+        if (events.isEmpty()) {
+            // If no events exist, add a 1-year time window from now
+            LocalDateTime oneYearFromNow = now.plusYears(1);
+            timeWindows.add(new TimeWindow(now, oneYearFromNow));
+        } else {
+            // Check the gap between now and the end of the last event
+            Event lastEvent = events.get(events.size() - 1);
+            Duration durationFromNowToLastEventEnd = Duration.between(now, lastEvent.getEndTime());
 
-        if (durationFromNowToLastEventEnd.toMinutes() >= 40) {
-            timeWindows.add(new TimeWindow(now, lastEvent.getEndTime()));
-        }
-
-        // Iterate through the list of events and find time windows between them
-        for (int i = events.size() - 1; i > 0; i--) {
-            Event currentEvent = events.get(i);
-            Event previousEvent = events.get(i - 1);
-
-            // Get the duration between the end of the current event and the start of the previous event
-            Duration gap = Duration.between(currentEvent.getEndTime(), previousEvent.getStartTime());
-
-            if (gap.toMinutes() >= minimumBlockSizeMinutes + 10) {
-                timeWindows.add(new TimeWindow(currentEvent.getEndTime(), previousEvent.getStartTime()));
+            // If the duration between now and the last event is greater than the minimum block size, add it
+            if (durationFromNowToLastEventEnd.toMinutes() >= 40) {
+                timeWindows.add(new TimeWindow(now, lastEvent.getEndTime()));
             }
+
+            // Iterate through the list of events and find time windows between them
+            for (int i = events.size() - 1; i > 0; i--) {
+                Event currentEvent = events.get(i);
+                Event previousEvent = events.get(i - 1);
+
+                // Get the duration between the end of the current event and the start of the previous event
+                Duration gap = Duration.between(currentEvent.getEndTime(), previousEvent.getStartTime());
+
+                if (gap.toMinutes() >= minimumBlockSizeMinutes + 10) {
+                    timeWindows.add(new TimeWindow(currentEvent.getEndTime(), previousEvent.getStartTime()));
+                }
+            }
+
+            // Add a 1-year time window starting from the end of the last event
+            LocalDateTime oneYearAfterLastEvent = lastEvent.getEndTime().plusYears(1);
+            timeWindows.add(new TimeWindow(lastEvent.getEndTime(), oneYearAfterLastEvent));
         }
 
         return timeWindows;
     }
+
 
     public static void sortEventsByStartTime(List<Event> events) {
         events.sort(Comparator.comparing(Event::getStartTime).reversed());
@@ -180,7 +209,4 @@ public class Scheduler {
         dbTasks.add(t);
 
     }
-
-
-
 }
