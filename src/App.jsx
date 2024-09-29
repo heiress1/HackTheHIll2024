@@ -5,11 +5,11 @@ import "@fontsource/inter";
 import { useState } from "react";
 
 function App() {
-    const [LeftState, setLeftState] = useState("base");
+    const [sizeState, setSizeState] = useState("normal");
     return (
         <>
-            <div className="flex w-[100vw] h-[100vh] flex-row">
-                <Sidebar leftState={LeftState} setLeftState={setLeftState} />
+            <div className="flex w-[100%] h-[100vh] flex-row justify-stretch">
+                <Sidebar sizeState={sizeState} setSizeState={setSizeState} />
                 <CalendarSection />
             </div>
         </>

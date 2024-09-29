@@ -48,7 +48,7 @@ export default function CalendarSection() {
     );
 
     return (
-        <div className="calendarSink bg-mid rounded-xl col-span-6 col-start-3 flex flex-col gap-12 m-4 p-4 w-[70vw]">
+        <div className="calendarSink bg-mid rounded-xl flex-1 transition-all ease-in-out col-span-6 col-start-3 flex flex-col gap-12 m-4 p-4 w-auto">
             <DnDCalendar
                 defaultView={Views.WEEK}
                 className="bg-white rounded-lg h-[rem]"
