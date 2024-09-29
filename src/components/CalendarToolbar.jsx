@@ -22,7 +22,7 @@ class BasicToolbar extends Toolbar {
                         <div className="flex flex-row items-center gap-4">
                             <div className="rbc-btn-group">
                                 <select
-                                    className="form-control px-3 p-2 border border-dark rounded-lg text-dark"
+                                    className="form-control px-3 p-[0.35rem] border border-dark rounded-lg text-dark hover:bg-dark hover:text-white transition-all ease-in-out"
                                     onChange={(e) =>
                                         this.handleDayChange(e, this.view)
                                     }

@@ -24,3 +24,13 @@ body,
 html {
     font-family: "Inter", sans-serif;
 }
+
+.rbc-today {
+    background-color: rgba(171, 174, 190, 0.568);
+}
+
+.rbc-timeslot-group {
+    display: flex;
+    align-items: center;
+    flex-flow: row-reverse;
+}

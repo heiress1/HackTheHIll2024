@@ -9,7 +9,7 @@ export default function EventWrapper(props) {
     return (
         <div
             onClick={toggleExpandState}
-            className="bg-mid text-dark rounded-lg p-4 hover:opacity-70 transition-all ease-in-out">
+            className="bg-zinc-600/20 border border-zinc-700 text-white rounded-lg p-4 hover:opacity-70 transition-all ease-in-out">
             <p className="font-bold">{props.children}</p>
             {expandState ? (
                 <>

@@ -20,13 +20,13 @@ export default function Sidebar(props) {
             case "expanded":
                 return { width: "48rem" };
             default:
-                return { width: "1rem" };
+                return { width: "3rem" };
         }
     }
 
     return (
         <div
-            className="bg-white h-[100vh] flex flex-row transition-all ease-in-out"
+            className=" h-[100vh] flex flex-row transition-all ease-in-out"
             style={sidebarStyleHandler(props.sizeState)}>
             {sidebarSizeHandler(props.sizeState)}
             {props.sizeState === "normal" ? (
