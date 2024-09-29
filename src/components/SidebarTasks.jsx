@@ -1,5 +1,6 @@
 import EventWrapper from "./EventWrapper";
 import DarkButton from "./DarkButton";
+import main from "../../jsAlgo/Scheduler";
 
 export default function SidebarTasks(props) {
     return (
@@ -34,8 +35,8 @@ export default function SidebarTasks(props) {
                 </DarkButton>
                 <DarkButton
                     onClick={() => {
-                        props.setSizeState("expanded");
-                        props.setMode("new");
+                        console.table(main(props.events));
+                        props.setTasks(main(props.events));
                     }}>
                     Reschedule
                 </DarkButton>

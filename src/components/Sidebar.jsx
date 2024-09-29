@@ -18,6 +18,7 @@ export default function Sidebar(props) {
                         events={getDummyEvents}
                         setMode={setMode}
                         setEditID={setEditID}
+                        setTasks={setDummyEvents}
                         setSizeState={props.setSizeState}
                     />
                 );
