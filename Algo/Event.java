@@ -19,6 +19,13 @@ public class Event {
         this.notes = notes;
         this.isLeisure = isLeisure;
     }
+    public Event(LocalDateTime startTime, LocalDateTime endTime, String name, String notes) {
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.eventLengthMinutes = Duration.between(startTime,endTime);
+        this.name = name;
+        this.notes = notes;
+    }
 
     public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;

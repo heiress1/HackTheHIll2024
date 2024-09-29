@@ -1,7 +1,10 @@
 package HackTheHIll2024.Algo;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -15,8 +18,35 @@ public class Scheduler {
     public static void importCalendar() {
         // Code Here to import any Json files for tasks and events and populate the Lists. Sort task upon import
     }
-    public static void outputCalendar(){
-        // Function To output all events and tasks as json files
+    public static void outputTasksToFile(List<Task> tasks, String fileName) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        try (FileWriter writer = new FileWriter(fileName)) {
+            writer.write("let events = [\n");
+            for (int i = 0; i < tasks.size(); i++) {
+                Task task = tasks.get(i);
+
+                String startDate = task.getStartTime() != null ? "new Date(\"" + task.getStartTime().format(formatter) + "\")" : "null";
+                String endDate = task.getEndtime() != null ? "new Date(\"" + task.getEndtime().format(formatter) + "\")" : "null";
+                String deadline = task.getDeadline() != null ? "new Date(\"" + task.getDeadline().format(formatter) + "\")" : "null";
+
+                writer.write("    {\n");
+                writer.write("        id: " + (i + 1) + ",\n");
+                writer.write("        title: \"" + task.getName() + "\",\n");
+                writer.write("        start: " + startDate + ",\n");
+                writer.write("        end: " + endDate + ",\n");
+                writer.write("        allDay: false,\n");
+                writer.write("        deadline: " + deadline + ",\n");
+                writer.write("        priority: " + task.getPriority() + ",\n");
+                writer.write("        description: \"" + task.getNotes() + "\",\n");
+                writer.write("        isDraggable: true,\n");
+                writer.write("    }" + (i < tasks.size() - 1 ? ",\n" : "\n"));
+            }
+            writer.write("];\n");
+            writer.write("export default events;\n");
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
     public static void writeTasksAndEvents(List<Task> tasks){
 
@@ -58,6 +88,8 @@ public class Scheduler {
 
 
     }
+    // Main function will add tasks into open timeWindows and if they are too long for a single timewindow it
+    // Will break them into multiple parts to fit into many timewindows. prioritizes deadline
     public static int scheduleTasks(List<Task> tasks, List<TimeWindow> timeWindows) {
         int returnCode = 1;
         int i = tasks.size() - 1;
