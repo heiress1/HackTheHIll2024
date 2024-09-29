@@ -6,7 +6,7 @@ export default function SidebarTasks(props) {
         <div className="flex flex-col m-4 w-96 justify-between">
             <div className="flex flex-col gap-3">
                 <h1 className="poppins-medium text-main text-4xl mb-6">
-                    CALENDARIFY
+                    Task Flow
                 </h1>
                 <p className="text-white font-semibold pl-2">My Tasks</p>
                 <hr className="opacity-35 pb-2"></hr>
