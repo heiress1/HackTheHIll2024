@@ -1,15 +1,36 @@
 import SidebarTasks from "./SidebarTasks";
 import TaskEdit from "./TaskEdit";
+import { useState } from "react";
 
 // import NewTask from "./NewTask"; // Import NewTask component
 
 export default function Sidebar(props) {
+    const [mode, setMode] = useState("new");
+    const [editID, setEditID] = useState(0);
+    const getDummyEvents = props.myEvents;
+    const setDummyEvents = props.setMyEvents;
+
     function sidebarSizeHandler(state) {
         switch (state) {
             case "normal":
-                return <SidebarTasks setSizeState={props.setSizeState} />;
+                return (
+                    <SidebarTasks
+                        events={getDummyEvents}
+                        setMode={setMode}
+                        setEditID={setEditID}
+                        setSizeState={props.setSizeState}
+                    />
+                );
             case "expanded":
-                return <TaskEdit />;
+                return (
+                    <TaskEdit
+                        id={editID}
+                        mode={mode}
+                        tasks={getDummyEvents}
+                        setTasks={setDummyEvents}
+                        setSizeState={props.setSizeState}
+                    />
+                );
             default:
                 return null;
         }

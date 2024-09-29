@@ -1,4 +1,3 @@
-import events from "../utils/dummyEvents";
 import EventWrapper from "./EventWrapper";
 import DarkButton from "./DarkButton";
 
@@ -11,12 +10,15 @@ export default function SidebarTasks(props) {
                 </h1>
                 <p className="text-white font-semibold pl-2">My Tasks</p>
                 <hr className="opacity-35 pb-2"></hr>
-                {events.map((event) => (
+                {props.events.map((event) => (
                     <EventWrapper
+                        setMode={props.setMode}
                         id={event.id}
+                        setEditID={props.setEditID}
                         key={event.key}
                         start={event.start}
                         end={event.end}
+                        setSizeState={props.setSizeState}
                         description={event.description}>
                         {event.title}
                     </EventWrapper>
@@ -25,6 +27,7 @@ export default function SidebarTasks(props) {
             <DarkButton
                 onClick={() => {
                     props.setSizeState("expanded");
+                    props.setMode("new");
                 }}>
                 Add Task
             </DarkButton>

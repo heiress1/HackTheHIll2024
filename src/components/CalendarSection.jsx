@@ -3,8 +3,7 @@ import withDragAndDrop from "react-big-calendar/lib/addons/dragAndDrop";
 import "react-big-calendar/lib/css/react-big-calendar.css";
 import "react-big-calendar/lib/addons/dragAndDrop/styles.css";
 import moment from "moment";
-import dummyEvents from "../utils/dummyEvents";
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 
 import CalendarToolbar from "./CalendarToolbar";
 
@@ -12,8 +11,8 @@ const DnDCalendar = withDragAndDrop(Calendar);
 
 const localizer = momentLocalizer(moment);
 
-export default function CalendarSection() {
-    const [myEvents, setMyEvents] = useState(dummyEvents);
+export default function CalendarSection(props) {
+    const { myEvents, setMyEvents } = props;
 
     const moveEvent = useCallback(
         ({ event, start, end, isAllDay: droppedOnAllDaySlot = false }) => {
