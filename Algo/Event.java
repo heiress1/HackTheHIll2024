@@ -1,17 +1,17 @@
 package HackTheHIll2024.Algo;
 
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Event {
-    private LocalDate startTime;
-    private LocalDate endTime;
+    private LocalDateTime startTime;
+    private LocalDateTime endTime;
     private Duration eventLengthMinutes;
     private String name;
     private String notes;
     private Boolean isLeisure;
 
-    public Event(LocalDate startTime, LocalDate endTime, String name, String notes, Boolean isLeisure) {
+    public Event(LocalDateTime startTime, LocalDateTime endTime, String name, String notes, Boolean isLeisure) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventLengthMinutes = Duration.between(startTime,endTime);
@@ -20,17 +20,17 @@ public class Event {
         this.isLeisure = isLeisure;
     }
 
-    public void setStartTime(LocalDate startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
         this.eventLengthMinutes = Duration.between(startTime,endTime);
     }
 
-    public void setEndTime(LocalDate endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
         this.eventLengthMinutes = Duration.between(startTime,endTime);
     }
 
-    public void setStartEnd(LocalDate startTime, LocalDate endTime) {
+    public void setStartEnd(LocalDateTime startTime, LocalDateTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
         this.eventLengthMinutes = Duration.between(startTime,endTime);
@@ -48,11 +48,11 @@ public class Event {
         this.notes = notes;
     }
 
-    public LocalDate getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public LocalDate getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 

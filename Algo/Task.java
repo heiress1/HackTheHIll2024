@@ -1,20 +1,23 @@
 package HackTheHIll2024.Algo;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.Duration;
-import java.time.LocalTime;
+
 public class Task {
     private int priority;
-    private Duration eventLengthMinutes;
+    private Duration duration;
 
-    private LocalDate startTime;
-    private LocalDate deadline;
+    private LocalDateTime startTime;
+    private LocalDateTime endtime;
+    private LocalDateTime deadline;
+    private LocalDateTime adjustedDeadline;
 
     private String name;
     private String notes;
 
-    public Task(int priority, Duration eventLengthMinutes, LocalDate deadlin, String name, String notes) {
+    public Task(int priority, Duration duration, LocalDateTime deadline, String name, String notes) {
         this.priority = priority;
-        this.eventLengthMinutes = eventLengthMinutes;
+        this.duration = duration;
+        this.deadline = deadline;
         this.name = name;
         this.notes = notes;
     }
@@ -23,11 +26,11 @@ public class Task {
         return priority;
     }
 
-    public Duration getEventLengthMinutes() {
-        return eventLengthMinutes;
+    public Duration getDuration() {
+        return duration;
     }
 
-    public LocalDate getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
@@ -39,7 +42,19 @@ public class Task {
         return notes;
     }
 
-    public void setDeadline(LocalDate deadline) {
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    public LocalDateTime getAdjustedDeadline() {
+        return adjustedDeadline;
+    }
+
+    public LocalDateTime getEndtime() {
+        return endtime;
+    }
+
+    public void setDeadline(LocalDateTime deadline) {
         this.deadline = deadline;
     }
 
@@ -47,11 +62,11 @@ public class Task {
         this.priority = priority;
     }
 
-    public void setEventLengthMinutes(Duration eventLengthMinutes) {
-        this.eventLengthMinutes = eventLengthMinutes;
+    public void setDuration(Duration eventLengthMinutes) {
+        this.duration = eventLengthMinutes;
     }
 
-    public void setStartTime(LocalDate startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
@@ -63,7 +78,11 @@ public class Task {
         this.notes = notes;
     }
 
-    public LocalDate getDeadline() {
-        return deadline;
+    public void setAdjustedDeadline(LocalDateTime adjustedDeadline) {
+        this.adjustedDeadline = adjustedDeadline;
+    }
+
+    public void setEndtime(LocalDateTime endtime) {
+        this.endtime = endtime;
     }
 }

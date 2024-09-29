@@ -1,13 +1,17 @@
 package HackTheHIll2024.Algo;
 
 import java.time.Duration;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Comparator;
 
 public class Scheduler {
-    int minimumBlockSizeMinutes;
-    static ArrayList<Task> tasks =  new ArrayList<>();
-    static ArrayList<Event> events = new ArrayList<>();
+    static int minimumBlockSizeMinutes = 30;
+    static List<Task> dbTasks =  new ArrayList<>();
+    static List<Event> dbEvents = new ArrayList<>();
+    static List<Task> taskSolution = new ArrayList<>();
     public static void importCalendar() {
         // Code Here to import any Json files for tasks and events and populate the Lists. Sort task upon import
 
@@ -16,7 +20,7 @@ public class Scheduler {
         // Function To output all events and tasks as json files
     }
 
-    public static void reBalance(){
+    public static String reBalance(){
         // Function to Rearrange the tasks around the events Based on their priority
         // Will chop up events and try to place them around
         // If it cannot find a valid placement for the events (Some events are uncompleted before the deadline)
@@ -32,45 +36,159 @@ public class Scheduler {
         // possible sol, check if sol is possible by ordering by due date and filling time, if not drop leisure, if still not
         // drop lowest priority category, then add in last, continute loop and mention what can be done.
         // Find the next open block by checking distance between start and end of next event
+        sortEventsByStartTime(dbEvents);
+        sortTasksByAdjustedDeadlineAndPriority(dbTasks);
+        //sort tasks by adjusted priority
+        adjustTaskDeadlines(dbTasks, dbEvents,false);
+        List<Task> tasks = new ArrayList<>(dbTasks);
+        List<Event> events = new ArrayList<>(dbEvents);
+        List<TimeWindow> timeWindows = new ArrayList<>(findTimeWindows(events));
+        if (scheduleTasks(tasks, timeWindows, false, false) == 0){
+            return "Success";
+        }
+        adjustTaskDeadlines(dbTasks, dbEvents,true);
+        timeWindows = new ArrayList<>(findTimeWindows(events));
+        if (scheduleTasks(tasks, timeWindows, true, false) == 0){
+            return "Warning, You will have to work in your Leisure time";
+        } else {
+            if(scheduleTasks(tasks, timeWindows, true, true) == 0) {
+                return "You will not be able to complete all tasks, consider dropping less important ones";
+            }
+            return "failure to schedule";
+        }
 
     }
-    private static void insertTask(Task newTask) {
-        int i = tasks.size() - 1;
+    // If IgnoreLeisure is true
+    public static int scheduleTasks(List<Task> tasks, List<TimeWindow> timeWindows, Boolean ignoreLeisure, boolean cutTasks) {
+        for (int i = tasks.size() - 1; i >= 0; i--) {
+            Task task = tasks.get(i);
+            Duration duration = task.getDuration();
+            for (int j = 0; j < timeWindows.size(); j++) {
+                TimeWindow window = timeWindows.get(j);
+                // timeWindow duration is geq than task duration plus 10 minutes (allows for 5 minute padding)
+                if (window.getDuration().compareTo(task.getDuration().plusMinutes(10)) >= 0) {
 
-        // Find the correct position to insert the new task
-        while (i >= 0) {
-            Task currentTask = tasks.get(i);
+                    Duration remainingTime = window.getDuration().minus(task.getDuration().plusMinutes(5));
+                    task.setStartTime(window.getStartDate().plusMinutes(5));
+                    task.setEndtime(window.getStartDate().plus(task.getDuration()));
 
-            // Compare by priority first
-            if (newTask.getPriority() < currentTask.getPriority()) {
-                i--;
-            } else if (newTask.getPriority() == currentTask.getPriority()) {
-                // If priority is the same, compare by deadline
-                long currentTaskDuration = Duration.between(LocalDate.now().atStartOfDay(), currentTask.getDeadline().atStartOfDay()).toDays();
-                long newTaskDuration = Duration.between(LocalDate.now().atStartOfDay(), newTask.getDeadline().atStartOfDay()).toDays();
+                    LocalDateTime endlastTask = task.getEndtime();
+                    Task lastTask = task;
+                    Task curTask = tasks.get(i - 1);
+                    while (remainingTime.compareTo(Duration.ofMinutes(minimumBlockSizeMinutes).plusMinutes(5)) >= 0){
+                        // The task is longer than the remaning time block it to the end then break
+                        Duration blockSpace = Duration.between(endlastTask, window.getEndDate().minusMinutes(5));
+                        if (curTask.getDuration().compareTo(remainingTime) > 0){
+                            Task t = new Task(task.getPriority(), blockSpace, task.getAdjustedDeadline(), task.getName(), task.getNotes());
+                            t.setStartTime(lastTask.getEndtime());
+                            t.setEndtime(window.getEndDate().minusMinutes(5));
+                            taskSolution.add(t);
+                            curTask.setDuration(task.getDuration().minus(blockSpace));
+                            break;
+                        }else {
+                            //If the event can fit in the remaining time, place it there then loop with the next item until the Timeframe is full
+                            curTask.setStartTime(lastTask.getEndtime());
+                            curTask.setEndtime(curTask.getStartTime().plus(curTask.getDuration()));
+                            i -= 1;
+                            lastTask = curTask;
+                            curTask = tasks.get(i - 1);
+                        }
 
-                // If new task's deadline is further away, move further up
-                if (newTaskDuration >= currentTaskDuration) {
-                    break;
-                } else {
-                    i--;
+                    }
+                } //else we will need to split the time up into chunks
+                else{
+                    Task t = new Task(task.getPriority(), window.duration.minusMinutes(10), task.getAdjustedDeadline(), task.getName(), task.getNotes());
+                    t.setStartTime(window.getStartDate().plusMinutes(5));
+                    t.setEndtime(window.getEndDate().minusMinutes(5));
+                    taskSolution.add(t);
+                    task.setDuration(task.getDuration().minus(window.duration).minusMinutes(10));
                 }
-            } else {
-                break;
+            }
+        }
+    }
+
+    public static void adjustTaskDeadlines(List<Task> tasks, List<Event> events, Boolean ignoreLeisure) {
+        // Loop through the tasks from the end to the beginning
+        for (int i = tasks.size() - 1; i >= 0; i--) {
+            Task task = tasks.get(i);
+            LocalDateTime taskDeadline = task.getDeadline();
+
+            // Loop through the events from the end to the beginning
+            for (int j = events.size() - 1; j >= 0; j--) {
+                Event event = events.get(j);
+                LocalDateTime eventStartTime = event.getStartTime();
+                LocalDateTime eventEndTime = event.getEndTime();
+
+                // Break if the event's end time is less than the task's deadline
+                if (eventEndTime.isBefore(taskDeadline)) {
+                    task.setAdjustedDeadline(taskDeadline);
+                    break; // Exit the loop since further events won't overlap with the task's deadline
+                }
+
+                // Check if the task deadline is between the event's start and end times
+                if (!taskDeadline.isBefore(eventStartTime) && !taskDeadline.isAfter(eventEndTime)) {
+                    if (!ignoreLeisure) {
+                        // Set adjustedDeadline to the start of the event
+                        task.setAdjustedDeadline(eventStartTime);
+                    } else {
+                        task.setAdjustedDeadline(taskDeadline);
+                    }
+                    break; // Exit the loop once the adjustedDeadline is set for this task
+                }
+            }
+        }
+    }
+    public static void removeLeisureEvents(List<Event> events) {
+        // Safe removal during iteration
+        events.removeIf(Event::getLeisure);
+    }
+    public static List<TimeWindow> findTimeWindows(List<Event> events) {
+        List<TimeWindow> timeWindows = new ArrayList<>();
+
+        // Get the current time
+        LocalDateTime now = LocalDateTime.now();
+
+        // Check the gap between now and the end of the last event
+        Event lastEvent = events.get(events.size() - 1);
+        Duration durationFromNowToLastEventEnd = Duration.between(now, lastEvent.getEndTime());
+
+        if (durationFromNowToLastEventEnd.toMinutes() >= 40) {
+            timeWindows.add(new TimeWindow(now, lastEvent.getEndTime()));
+        }
+
+        // Iterate through the list of events and find time windows between them
+        for (int i = events.size() - 1; i > 0; i--) {
+            Event currentEvent = events.get(i);
+            Event previousEvent = events.get(i - 1);
+
+            // Get the duration between the end of the current event and the start of the previous event
+            Duration gap = Duration.between(currentEvent.getEndTime(), previousEvent.getStartTime());
+
+            if (gap.toMinutes() >= minimumBlockSizeMinutes + 10) {
+                timeWindows.add(new TimeWindow(currentEvent.getEndTime(), previousEvent.getStartTime()));
             }
         }
 
-        // Insert the new task at the correct position
-        tasks.add(i + 1, newTask);
+        return timeWindows;
     }
 
-    public static void newEvent(LocalDate startTime, LocalDate endTime, String name, String notes, Boolean isLeisure){
-        Event e = new Event(startTime, endTime, name, notes, isLeisure);
-        events.add(e);
+    public static void sortEventsByStartTime(List<Event> events) {
+        events.sort(Comparator.comparing(Event::getStartTime).reversed());
     }
-    public static void newTask(int priority, Duration duration, LocalDate deadline, String name, String notes){
+
+    public static void sortTasksByAdjustedDeadlineAndPriority(List<Task> tasks) {
+        tasks.sort(Comparator
+                .comparing(Task::getAdjustedDeadline).reversed() // Descending order for deadline
+                .thenComparing(Comparator.comparingInt(Task::getPriority).reversed())); // Descending order for priority
+    }
+    public static void newEvent(LocalDateTime startTime, LocalDateTime endTime, String name, String notes, Boolean isLeisure){
+        Event e = new Event(startTime, endTime, name, notes, isLeisure);
+        dbEvents.add(e);
+    }
+    public static void newTask(int priority, Duration duration, LocalDateTime deadline, String name, String notes){
         Task t = new Task(priority, duration, deadline, name, notes );
-        insertTask(t);
+        dbTasks.add(t);
+
     }
 
 
