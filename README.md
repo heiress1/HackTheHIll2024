@@ -1,17 +1,38 @@
-# React + Vite
+**TaskFlow**
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## 💻Overview
 
-Currently, two official plugins are available:
+⚡Supercharge Your Productivity with Taskflow!⚡
 
--   [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
--   [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Taskflow is an innovative open-source calendar scheduling and management software designed to elevate your productivity. Effortlessly manage your tasks with our intelligent system that automatically reschedules missed tasks, ensuring you never fall behind. Experience seamless organization and reclaim your time with Taskflow!
 
-to run:
-npm run start
+## 📧 Download our latest release here
 
-and then seperate window
-npm run electron
+link:
 
-npm run build
-then npm run dist
+## 📝 Technology
+
+-   built and deployed with ReactJs and Electron along with vite.
+-   Styled using TailwindCSS
+-   Algorithms written with Java ☕
+
+## 🚀 Getting Started
+
+Install my project using Github
+
+```bash
+  git clone git@github.com:DanThePanMan/HackTheHIll2024.git
+  cd HackTheHIll2024
+```
+
+Running the program via Electron
+
+```bash
+    npm start
+```
+
+and in a seperate terminal
+
+```bash
+  npm run electron
+```
